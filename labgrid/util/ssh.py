@@ -16,6 +16,9 @@ from .helper import get_free_port
 
 __all__ = ['sshmanager', 'SSHConnection', 'ForwardError']
 
+def get_ssh_connect_timeout():
+    return int(os.environ.get("LG_SSH_CONNECT_TIMEOUT", 30))
+
 
 @attr.s
 class SSHConnectionManager:
@@ -400,11 +403,13 @@ class SSHConnection:
         """Starts a controlmaster connection in a temporary directory."""
         control = os.path.join(self._tmpdir, f'control-{self.host}')
 
+        connect_timeout = get_ssh_connect_timeout()
+
         self._logger.debug("ControlSocket: %s", control)
         args = ["ssh"] + SSHConnection._get_ssh_base_args()
         args += [
             "-n", "-MN",
-            "-o", "ConnectTimeout=30",
+            "-o", f"ConnectTimeout={connect_timeout}",
             "-o", "ControlPersist=300",
             "-o", "ControlMaster=yes",
             "-o", f"ControlPath={control}",
@@ -423,7 +428,7 @@ class SSHConnection:
         )
 
         try:
-            if self._master.wait(timeout=30) != 0:
+            if self._master.wait(timeout=connect_timeout) != 0:
                 raise ExecutionError(
                     f"failed to connect to {self.host} with args {args}, returncode={self._master.wait()} {self._master.stdout.readlines()},{self._master.stderr.readlines()} "  # pylint: disable=line-too-long
                 )

@@ -20,6 +20,7 @@ from .exception import ExecutionError
 from ..util.helper import get_free_port
 from ..util.proxy import proxymanager
 from ..util.timeout import Timeout
+from ..util.ssh import get_ssh_connect_timeout
 
 
 @target_factory.reg_driver
@@ -63,7 +64,7 @@ class SSHDriver(CommandMixin, Driver, CommandProtocol, FileTransferProtocol):
     def _start_own_master(self):
         """Starts a controlmaster connection in a temporary directory."""
 
-        timeout = Timeout(30.0)
+        timeout = Timeout(float(get_ssh_connect_timeout()))
 
         # Retry start of controlmaster, to allow handle failures such as
         # connection refused during target startup
