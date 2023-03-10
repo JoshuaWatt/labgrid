@@ -7,13 +7,6 @@ import pytest
 
 from ..step import steps
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(levelname)7s: %(message)s',
-    stream=sys.stderr,
-)
-
-
 def safe_dupfile(f):
     if pytest.__version__ < "6.0.0":
         from _pytest.capture import safe_text_dupfile  # pylint: disable=no-name-in-module
