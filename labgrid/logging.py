@@ -1,7 +1,6 @@
 import re
 
 import logging
-import os
 
 import attr
 
